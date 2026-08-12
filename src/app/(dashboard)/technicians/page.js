@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Search, User, Wrench, CheckCircle, Mail, Phone } from 'lucide-react';
+import { Search, User, Wrench, CheckCircle, Mail, Phone, Plus, X, Loader2, Trash2 } from 'lucide-react';
 
 export default function TechniciansPage() {
   const [technicians, setTechnicians] = useState([]);
@@ -12,6 +12,16 @@ export default function TechniciansPage() {
   const [viewingTech, setViewingTech] = useState(null);
   const [techWorkOrders, setTechWorkOrders] = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
+
+  // Create Tech State
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creatingTech, setCreatingTech] = useState(false);
+  const [newTech, setNewTech] = useState({
+    full_name: '',
+    email: '',
+    password: '',
+    role: 'technician'
+  });
 
   useEffect(() => {
     fetchTechnicians();
@@ -58,6 +68,48 @@ export default function TechniciansPage() {
     setLoading(false);
   };
 
+  const handleCreateTechnician = async (e) => {
+    e.preventDefault();
+    setCreatingTech(true);
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .insert([
+        {
+          full_name: newTech.full_name,
+          email: newTech.email,
+          password: newTech.password,
+          role: newTech.role
+        }
+      ]);
+
+    setCreatingTech(false);
+
+    if (error) {
+      alert('Error creating technician: ' + error.message);
+    } else {
+      setShowCreateModal(false);
+      setNewTech({ full_name: '', email: '', password: '', role: 'technician' });
+      fetchTechnicians(); // Refresh list
+    }
+  };
+
+  const handleDeleteTechnician = async (e, techId) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this technician?")) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', techId);
+
+    if (error) {
+      alert("Error deleting technician: " + error.message);
+    } else {
+      fetchTechnicians();
+    }
+  };
+
   const openTechPortal = async (tech) => {
     setViewingTech(tech);
     setLoadingJobs(true);
@@ -94,6 +146,13 @@ export default function TechniciansPage() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Technicians</h1>
           <p className="text-muted-foreground">Manage your maintenance crew and their assignments.</p>
         </div>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="w-5 h-5" />
+          Create Technician
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -111,11 +170,20 @@ export default function TechniciansPage() {
                   <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-bold uppercase">
                     {tech.full_name ? tech.full_name.charAt(0) : tech.email.charAt(0)}
                   </div>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                    tech.status === 'Available' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'
-                  }`}>
-                    {tech.status}
-                  </span>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                      tech.status === 'Available' ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'
+                    }`}>
+                      {tech.status}
+                    </span>
+                    <button
+                      onClick={(e) => handleDeleteTechnician(e, tech.id)}
+                      className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                      title="Delete Technician"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-4">
                   <h3 className="font-semibold text-foreground text-lg">{tech.full_name || 'Unnamed Technician'}</h3>
@@ -218,6 +286,84 @@ export default function TechniciansPage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Technician Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
+          <div className="bg-card w-full max-w-md rounded-xl border border-border shadow-lg overflow-hidden">
+            <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/20">
+              <h3 className="font-bold text-lg text-foreground">Add New Technician</h3>
+              <button onClick={() => setShowCreateModal(false)} className="text-muted-foreground hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateTechnician} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Full Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newTech.full_name}
+                  onChange={(e) => setNewTech({...newTech, full_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                  placeholder="e.g. John Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Email</label>
+                <input 
+                  type="email" 
+                  required
+                  value={newTech.email}
+                  onChange={(e) => setNewTech({...newTech, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                  placeholder="tech@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Password</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newTech.password}
+                  onChange={(e) => setNewTech({...newTech, password: e.target.value})}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                  placeholder="Enter a secure password"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1">Role</label>
+                <select 
+                  value={newTech.role}
+                  onChange={(e) => setNewTech({...newTech, role: e.target.value})}
+                  className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                >
+                  <option value="technician">Technician</option>
+                  <option value="manager">Manager</option>
+                </select>
+              </div>
+              
+              <div className="pt-4 flex justify-end gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setShowCreateModal(false)}
+                  className="px-4 py-2 border border-input rounded-md text-sm font-medium text-foreground hover:bg-secondary/50"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={creatingTech}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 flex items-center gap-2"
+                >
+                  {creatingTech ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Technician'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
-import { Settings, Lock, Mail, Loader2, AlertCircle } from 'lucide-react';
+import { Settings, Lock, Mail, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -18,15 +19,33 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // First try checking the admin table
+    let { data, error } = await supabase
+      .from('admin')
+      .select('*')
+      .eq('email', email)
+      .eq('password', password)
+      .single();
 
-    if (error) {
-      setError(error.message);
+    // If not found in admin table, try checking profiles table
+    if (error || !data) {
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .single();
+        
+      data = profileData;
+      error = profileError;
+    }
+
+    if (error || !data) {
+      setError('Invalid email or password');
       setLoading(false);
     } else {
+      // Set custom session cookie
+      document.cookie = `cmms_session=${data.id}; path=/; max-age=86400`;
       router.push('/dashboard');
       router.refresh();
     }
@@ -88,13 +107,26 @@ export default function LoginPage() {
                   <Lock className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2 border border-input rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition duration-150 ease-in-out"
+                  className="block w-full pl-10 pr-10 py-2 border border-input rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition duration-150 ease-in-out"
                   placeholder="••••••••"
                 />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-muted-foreground hover:text-foreground focus:outline-none transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -112,9 +144,9 @@ export default function LoginPage() {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary hover:text-primary/80 transition-colors">
+                <Link href="/auth/forgot-password" className="font-medium text-primary hover:text-primary/80 transition-colors">
                   Forgot your password?
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -129,27 +161,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-card text-muted-foreground">
-                  Don't have an account?
-                </span>
-              </div>
-            </div>
 
-            <div className="mt-6">
-              <Link
-                href="/register"
-                className="w-full flex justify-center py-2 px-4 border border-input rounded-md shadow-sm text-sm font-medium text-foreground bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-150 ease-in-out"
-              >
-                Create an account
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </div>
