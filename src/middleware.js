@@ -31,9 +31,8 @@ export async function middleware(request) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const cmmsSessionCookie = request.cookies.get('cmms_session');
+  const user = cmmsSessionCookie ? { id: cmmsSessionCookie.value } : null;
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
   const isProtectedRoute =
