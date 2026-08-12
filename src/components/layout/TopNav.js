@@ -8,7 +8,7 @@ export default function TopNav() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    document.cookie = 'cmms_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     router.push('/auth/login');
     router.refresh();
   };
