@@ -10,8 +10,9 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Filter, MoreHorizontal, Activity, Power, Trash2, MapPin, Settings2, Eye, MoreVertical, ChevronsUpDown, Cuboid, CheckCircle2, AlertCircle, AlertTriangle, X } from 'lucide-react';
+import { Plus, Search, Filter, MoreHorizontal, Activity, Power, Trash2, MapPin, Settings2, Eye, MoreVertical, ChevronsUpDown, Cuboid, CheckCircle2, AlertCircle, AlertTriangle, X, QrCode } from 'lucide-react';
 import Link from 'next/link';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function AssetsPage() {
   const [assets, setAssets] = useState([]);
@@ -47,6 +48,9 @@ export default function AssetsPage() {
   const [curr, setCurr] = useState(5);
   const [press, setPress] = useState(50);
   const [submitting, setSubmitting] = useState(false);
+
+  // QR Code State
+  const [qrAsset, setQrAsset] = useState(null);
 
   // Add Asset State
   const [isAddingAsset, setIsAddingAsset] = useState(false);
@@ -501,6 +505,13 @@ export default function AssetsPage() {
                           >
                             <Eye className="w-4 h-4" /> View
                           </Link>
+                          <button
+                            onClick={() => setQrAsset(asset)}
+                            className="flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors"
+                            title="Generate QR Code"
+                          >
+                            <QrCode className="w-4 h-4" /> QR
+                          </button>
                           <button
                             onClick={() => handleDeleteAsset(asset.id, asset.name)}
                             className="text-red-400 hover:text-red-600 transition-colors"
@@ -1042,6 +1053,42 @@ export default function AssetsPage() {
           </div>
         </div>
       )}
+      {/* QR Code Modal */}
+      {qrAsset && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-sm rounded-2xl shadow-xl flex flex-col items-center p-8 relative">
+            <button
+              onClick={() => setQrAsset(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 mb-6">
+              <QrCode className="w-6 h-6" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 text-center mb-2">{qrAsset.name}</h2>
+            <p className="text-sm text-slate-500 text-center mb-8 uppercase tracking-wider">{qrAsset.id.split('-')[0]}</p>
+            
+            <div className="p-4 bg-white border-2 border-slate-100 rounded-xl shadow-sm mb-8">
+              <QRCodeSVG 
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/scan/${qrAsset.id}`}
+                size={200}
+                bgColor={"#ffffff"}
+                fgColor={"#0f172a"}
+                level={"H"}
+              />
+            </div>
+            
+            <button 
+              onClick={() => window.print()}
+              className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors shadow-sm"
+            >
+              Print QR Code
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

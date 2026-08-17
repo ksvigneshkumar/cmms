@@ -19,13 +19,15 @@ import {
   History,
   BarChart3,
   Sparkles,
-  X
+  X,
+  QrCode
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMobileMenu } from '@/components/layout/MobileMenuContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutTemplate },
+  { name: 'Scan Asset', href: '/scan', icon: QrCode },
   { name: 'Assets', href: '/assets', icon: Boxes },
   { name: 'Alerts', href: '/alerts', icon: ShieldAlert },
   { name: 'Work Orders', href: '/work-orders', icon: Wrench },
@@ -81,14 +83,17 @@ export default function Sidebar() {
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={cn(
-                    'flex items-center px-3 py-2.5 text-sm rounded-md transition-colors',
-                    isActive
-                      ? 'bg-secondary text-foreground font-semibold'
-                      : 'font-medium text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
-                  )}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group relative
+                    ${isActive 
+                      ? 'bg-indigo-50/50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' 
+                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
+                    }
+                  `}
                 >
-                  <item.icon className={cn('mr-3 h-5 w-5', isActive ? 'text-foreground' : 'text-muted-foreground')} />
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 rounded-r-full shadow-[0_0_8px_rgba(79,70,229,0.5)]" />
+                  )}
+                  <item.icon className={`w-4 h-4 transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'group-hover:text-foreground'}`} />
                   {item.name}
                 </Link>
               );
