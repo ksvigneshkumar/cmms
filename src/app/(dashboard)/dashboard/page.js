@@ -59,12 +59,24 @@ export default function DashboardPage() {
   const [isAddingSchedule, setIsAddingSchedule] = useState(false);
   const [newSchedule, setNewSchedule] = useState({ asset: '', type: '', frequency: '30 Days', nextDue: '' });
 
-  const handleGeneratePreventiveWO = (id) => {
+  const handleGeneratePreventiveWO = async (id) => {
     setGenerating(id);
-    setTimeout(() => {
-      setSchedules(schedules.filter(s => s.id !== id));
-      setGenerating(null);
-    }, 1500);
+    try {
+      // In a real production app, this API is hit automatically by a Cron Job scheduler (like Vercel Cron)
+      // Here we allow the admin to manually trigger it for testing.
+      const res = await fetch('/api/cron/preventive');
+      if (res.ok) {
+        // Re-fetch schedules to show updated dates
+        const { data } = await supabase
+          .from('preventive_schedules')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (data) setSchedules(data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setGenerating(null);
   };
 
   const handleAddSchedule = async (e) => {
