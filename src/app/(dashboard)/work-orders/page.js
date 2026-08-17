@@ -7,9 +7,9 @@ import {
   Search, 
   Filter, 
   Plus, 
-  ClipboardSignature, 
-  ShieldCheck, 
-  Timer, 
+  ClipboardList, 
+  CheckCircle2, 
+  Clock, 
   CalendarDays
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -238,31 +238,33 @@ export default function WorkOrdersPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center">
-            <ClipboardSignature className="w-6 h-6" />
+        <div className="glass-card hover-lift p-5 rounded-xl relative overflow-hidden group">
+          <div className="flex items-center gap-2 mb-3">
+            <ClipboardList className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total Open</h3>
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Total Open</p>
-            <p className="text-2xl font-bold text-foreground">{workOrders.filter(w => w.status === 'Open').length}</p>
-          </div>
-        </div>
-        <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center">
-            <Timer className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-sm text-muted-foreground">In Progress</p>
-            <p className="text-2xl font-bold text-foreground">{workOrders.filter(w => w.status === 'In Progress').length}</p>
+          <div className="flex items-baseline gap-3 relative z-10">
+            <span className="text-3xl font-bold tracking-tight text-foreground">{workOrders.filter(w => w.status === 'Open').length}</span>
           </div>
         </div>
-        <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center">
-            <ShieldCheck className="w-6 h-6" />
+        
+        <div className="glass-card hover-lift p-5 rounded-xl relative overflow-hidden group">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">In Progress</h3>
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground">Completed (30d)</p>
-            <p className="text-2xl font-bold text-foreground">{workOrders.filter(w => w.status === 'Completed').length}</p>
+          <div className="flex items-baseline gap-3 relative z-10">
+            <span className="text-3xl font-bold tracking-tight text-foreground">{workOrders.filter(w => w.status === 'In Progress').length}</span>
+          </div>
+        </div>
+        
+        <div className="glass-card hover-lift p-5 rounded-xl relative overflow-hidden group">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle2 className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Completed (30d)</h3>
+          </div>
+          <div className="flex items-baseline gap-3 relative z-10">
+            <span className="text-3xl font-bold tracking-tight text-foreground">{workOrders.filter(w => w.status === 'Completed').length}</span>
           </div>
         </div>
       </div>
@@ -375,12 +377,12 @@ export default function WorkOrdersPage() {
                             }}
                             className="px-3 py-1.5 text-xs font-medium text-white bg-green-500 hover:bg-green-600 rounded-md transition-colors flex items-center gap-1"
                           >
-                            <ShieldCheck className="w-3 h-3" /> Complete
+                            <CheckCircle2 className="w-3 h-3" /> Complete
                           </button>
                         )}
                         {order.status === 'Completed' && (
                           <span className="text-xs font-medium text-green-500 flex items-center gap-1 justify-end">
-                            <ShieldCheck className="w-3 h-3" /> Done
+                            <CheckCircle2 className="w-3 h-3" /> Done
                           </span>
                         )}
                       </div>

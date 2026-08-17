@@ -89,6 +89,24 @@
   * {
     border-color: var(--border);
   }
+}
+
+@layer utilities {
+  .bg-primary {
+    background: linear-gradient(135deg, #1f6fb2, #2ec4b6) !important;
+    color: #ffffff !important;
+  }
+  
+  .bg-primary\/10 {
+    background: rgba(31, 111, 178, 0.1) !important;
+  }
+  
+  .bg-primary\/20 {
+    background: rgba(31, 111, 178, 0.2) !important;
+  }
+}
+
+@layer base {
 
   body {
     background-color: var(--background);

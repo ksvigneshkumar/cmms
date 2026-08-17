@@ -83,17 +83,14 @@ export default function Sidebar() {
                   key={item.name}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group relative
-                    ${isActive 
-                      ? 'bg-indigo-50/50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400' 
-                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-foreground'
-                    }
-                  `}
-                >
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-indigo-600 rounded-r-full shadow-[0_0_8px_rgba(79,70,229,0.5)]" />
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group relative",
+                    isActive 
+                      ? "bg-primary text-white font-medium shadow-md hover:opacity-90" 
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground font-medium"
                   )}
-                  <item.icon className={`w-4 h-4 transition-colors ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'group-hover:text-foreground'}`} />
+                >
+                  <item.icon className={cn("w-4 h-4", isActive ? "text-white drop-shadow-sm" : "text-muted-foreground group-hover:text-accent-foreground")} />
                   {item.name}
                 </Link>
               );
