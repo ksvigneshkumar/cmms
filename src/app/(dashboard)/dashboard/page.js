@@ -328,7 +328,7 @@ export default function DashboardPage() {
 
       {/* Preventive Maintenance Section */}
       <div className="space-y-4 pt-6 mt-6 border-t border-border">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
               <SettingsIcon className="w-5 h-5 text-primary" />
@@ -338,7 +338,7 @@ export default function DashboardPage() {
           </div>
           <button 
             onClick={() => setIsAddingSchedule(true)}
-            className="flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            className="flex items-center justify-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md text-sm font-medium transition-colors w-full sm:w-auto"
           >
             <Plus className="w-4 h-4" />
             New Schedule

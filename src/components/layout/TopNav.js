@@ -1,11 +1,13 @@
 'use client';
 
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Search, User, Menu } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useMobileMenu } from '@/components/layout/MobileMenuContext';
 
 export default function TopNav() {
   const router = useRouter();
+  const { setIsOpen } = useMobileMenu();
 
   const handleLogout = async () => {
     document.cookie = 'cmms_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -14,9 +16,15 @@ export default function TopNav() {
   };
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-card">
-      <div className="flex-1 flex items-center">
-        <div className="relative w-96">
+    <header className="h-16 flex items-center justify-between px-4 sm:px-6 border-b border-border bg-card gap-4">
+      <div className="flex-1 flex items-center gap-3">
+        <button
+          className="md:hidden p-1 -ml-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-accent"
+          onClick={() => setIsOpen(true)}
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+        <div className="relative w-full md:w-96 max-w-[200px] sm:max-w-sm">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search className="h-4 w-4 text-muted-foreground" />
           </div>

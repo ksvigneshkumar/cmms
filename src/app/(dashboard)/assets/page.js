@@ -353,7 +353,7 @@ export default function AssetsPage() {
 
       <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
         <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="relative max-w-md w-full flex items-center gap-2">
+          <div className="relative w-full sm:max-w-md flex flex-col sm:flex-row gap-2">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-muted-foreground" />
@@ -370,7 +370,7 @@ export default function AssetsPage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="block w-48 pl-3 pr-8 py-2 border border-input rounded-md leading-5 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm transition-colors"
+              className="block w-full sm:w-48 pl-3 pr-8 py-2 border border-input rounded-md leading-5 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm transition-colors"
             >
               <option value="All">All Categories</option>
               {CATEGORIES.map(cat => (
@@ -378,7 +378,7 @@ export default function AssetsPage() {
               ))}
             </select>
           </div>
-          <button className="flex items-center gap-2 px-3 py-2 bg-background border border-input rounded-md text-sm font-medium hover:bg-accent transition-colors">
+          <button className="flex items-center justify-center gap-2 px-3 py-2 bg-background border border-input rounded-md text-sm font-medium hover:bg-accent transition-colors w-full sm:w-auto">
             <Filter className="w-4 h-4" />
             Filters
           </button>
