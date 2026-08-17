@@ -1,6 +1,9 @@
 {
-  "name": "cmms",
-  "version": "0.1.0",
+  "name": "cmms-pro-enterprise",
+  "version": "1.0.0",
+  "description": "CMMS Pro - Enterprise Asset Management System",
+  "author": "Vignesh K.S",
+  "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "dev": "next dev",

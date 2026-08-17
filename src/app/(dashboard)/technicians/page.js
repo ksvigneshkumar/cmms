@@ -143,7 +143,7 @@ export default function TechniciansPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Technicians</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Technicians</h1>
           <p className="text-muted-foreground">Manage your maintenance crew and their assignments.</p>
         </div>
         <button
@@ -164,7 +164,7 @@ export default function TechniciansPage() {
           </div>
         ) : (
           technicians.map(tech => (
-            <div key={tech.id} className="bg-card rounded-xl border border-border shadow-sm overflow-hidden hover:border-primary/50 transition-colors group">
+            <div key={tech.id} className="glass-card rounded-2xl overflow-hidden hover:border-primary/50 transition-colors group">
               <div className="p-6 pb-4">
                 <div className="flex justify-between items-start">
                   <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center text-lg font-bold uppercase">
@@ -226,7 +226,7 @@ export default function TechniciansPage() {
       {/* Technician Portal Modal */}
       {viewingTech && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
-          <div className="bg-card w-full max-w-4xl rounded-xl border border-border shadow-lg flex flex-col max-h-[90vh]">
+          <div className="glass-card w-full max-w-4xl rounded-2xl shadow-2xl flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-border flex items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold text-foreground flex items-center gap-2">

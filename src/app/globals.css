@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -28,41 +29,52 @@
 
 @layer base {
   :root {
-    --background: #f8fafc; /* Slate 50 */
-    --foreground: #020817; /* Slate 950 */
+    --background: #f6f9fc; /* Premium off-white */
+    --foreground: #020817;
+    /* Slate 950 */
     --card: #ffffff;
     --card-foreground: #020817;
     --popover: #ffffff;
     --popover-foreground: #020817;
-    --primary: #1f6fb2; /* Updated to gradient start */
+    --primary: #1f6fb2;
+    /* Updated to gradient start */
     --primary-foreground: #ffffff;
-    --secondary: #f1f5f9; /* Slate 100 */
+    --secondary: #f1f5f9;
+    /* Slate 100 */
     --secondary-foreground: #0f172a;
     --muted: #f1f5f9;
-    --muted-foreground: #64748b; /* Slate 500 */
+    --muted-foreground: #64748b;
+    /* Slate 500 */
     --accent: #f1f5f9;
     --accent-foreground: #0f172a;
-    --destructive: #ef4444; /* Red 500 */
+    --destructive: #ef4444;
+    /* Red 500 */
     --destructive-foreground: #f8fafc;
-    --border: #e2e8f0; /* Slate 200 */
+    --border: #e2e8f0;
+    /* Slate 200 */
     --input: #e2e8f0;
     --ring: #1f6fb2;
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: #020817; /* Deep slate */
+    --background: #020817;
+    /* Deep slate */
     --foreground: #f8fafc;
-    --card: #0f172a; /* Slate 900 */
+    --card: #0f172a;
+    /* Slate 900 */
     --card-foreground: #f8fafc;
     --popover: #0f172a;
     --popover-foreground: #f8fafc;
-    --primary: #2ec4b6; /* Updated to gradient end for dark mode */
+    --primary: #2ec4b6;
+    /* Updated to gradient end for dark mode */
     --primary-foreground: #ffffff;
-    --secondary: #1e293b; /* Slate 800 */
+    --secondary: #1e293b;
+    /* Slate 800 */
     --secondary-foreground: #f8fafc;
     --muted: #1e293b;
-    --muted-foreground: #94a3b8; /* Slate 400 */
+    --muted-foreground: #94a3b8;
+    /* Slate 400 */
     --accent: #1e293b;
     --accent-foreground: #f8fafc;
     --destructive: #7f1d1d;
@@ -77,10 +89,23 @@
   * {
     border-color: var(--border);
   }
+
   body {
     background-color: var(--background);
+    background-image:
+      radial-gradient(at 0% 0%, hsla(210, 100%, 95%, 0.6) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(180, 100%, 95%, 0.5) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h18v18H1V1zm1 1v16h16V2H2z' fill='%23e2e8f0' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-attachment: fixed;
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(at 0% 0%, hsla(220, 50%, 15%, 0.5) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(180, 50%, 15%, 0.5) 0px, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h18v18H1V1zm1 1v16h16V2H2z' fill='%231e293b' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
   }
 }
 
@@ -89,9 +114,11 @@
     background: linear-gradient(135deg, #1f6fb2, #2ec4b6) !important;
     color: white !important;
   }
+
   .bg-primary:hover {
     background: linear-gradient(135deg, #1a5c93, #25a095) !important;
   }
+
   .text-primary {
     background: linear-gradient(135deg, #1f6fb2, #2ec4b6) !important;
     -webkit-background-clip: text !important;
@@ -113,18 +140,52 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* Premium Card Glass */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+}
+
+.dark .glass-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Premium Hover Effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.05), 0 10px 10px rgba(0, 0, 0, 0.02);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.dark .hover-lift:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.4), 0 10px 10px rgba(0, 0, 0, 0.2);
+  border-color: rgba(46, 196, 182, 0.3);
+}
+
 /* Custom Scrollbar for Enterprise UI */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }

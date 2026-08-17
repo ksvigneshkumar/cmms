@@ -91,14 +91,14 @@ export default function ReportsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Reports</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Reports</h1>
           <p className="text-muted-foreground">Generate and export system reports.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {reports.map(report => (
-          <div key={report.id} className="bg-card rounded-xl border border-border shadow-sm p-6 hover:border-primary/50 transition-colors group">
+          <div key={report.id} className="glass-card rounded-2xl overflow-hidden hover:border-primary/50 transition-colors group p-6">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">

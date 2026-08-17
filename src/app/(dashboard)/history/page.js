@@ -47,12 +47,12 @@ export default function HistoryPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Maintenance History</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Maintenance History</h1>
           <p className="text-muted-foreground">Log of all completed maintenance tasks and repairs.</p>
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+      <div className="glass-card rounded-2xl overflow-hidden flex flex-col">
         <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -74,16 +74,16 @@ export default function HistoryPage() {
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 border-b border-border">
+            <thead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-secondary/50 border-b border-border">
               <tr>
-                <th className="px-6 py-4 font-semibold">Asset & Issue</th>
-                <th className="px-6 py-4 font-semibold">Resolution</th>
-                <th className="px-6 py-4 font-semibold">Technician</th>
-                <th className="px-6 py-4 font-semibold">Cost</th>
-                <th className="px-6 py-4 font-semibold">Running Time (MTBF)</th>
-                <th className="px-6 py-4 font-semibold">Downtime (MTTR)</th>
-                <th className="px-6 py-4 font-semibold">Completed Date</th>
-                <th className="px-6 py-4 text-right font-semibold">Details</th>
+                <th className="px-6 py-4">Asset & Issue</th>
+                <th className="px-6 py-4">Resolution</th>
+                <th className="px-6 py-4">Technician</th>
+                <th className="px-6 py-4">Cost</th>
+                <th className="px-6 py-4">Running Time (MTBF)</th>
+                <th className="px-6 py-4">Downtime (MTTR)</th>
+                <th className="px-6 py-4">Completed Date</th>
+                <th className="px-6 py-4 text-right">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -104,7 +104,7 @@ export default function HistoryPage() {
                 </tr>
               ) : (
                 filteredHistory.map((record) => (
-                  <tr key={record.id} className="hover:bg-accent/50 transition-colors">
+                  <tr key={record.id} className="hover:bg-secondary/30 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="font-medium text-foreground">{record.assets?.name || 'Unknown'}</div>
                       <div className="text-xs text-muted-foreground mt-0.5 truncate max-w-[200px]" title={record.issue}>{record.issue}</div>

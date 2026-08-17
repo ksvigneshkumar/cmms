@@ -1,3 +1,10 @@
+/**
+ * Global Dashboard Layout
+ * 
+ * This component acts as the global shell for all authenticated dashboard routes.
+ * It wraps the main content with the MobileMenuProvider, rendering the Sidebar 
+ * and TopNav navigation structures dynamically.
+ */
 import Sidebar from '@/components/layout/Sidebar';
 import TopNav from '@/components/layout/TopNav';
 import { MobileMenuProvider } from '@/components/layout/MobileMenuContext';

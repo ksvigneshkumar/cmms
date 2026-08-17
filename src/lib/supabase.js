@@ -1,3 +1,9 @@
+/**
+ * Supabase Client Initialization
+ * 
+ * This file configures the Supabase client for the browser using environment variables.
+ * It is used across the application to query the database and manage authentication.
+ */
 import { createBrowserClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';

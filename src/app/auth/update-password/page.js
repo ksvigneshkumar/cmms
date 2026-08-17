@@ -38,14 +38,8 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-background relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-background relative">
       <div className="sm:mx-auto sm:w-full sm:max-w-md z-10">
-        <div className="flex justify-center text-primary">
-          <Settings className="w-12 h-12" />
-        </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground tracking-tight">
           Set New Password
         </h2>
@@ -55,7 +49,7 @@ export default function UpdatePasswordPage() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10">
-        <div className="glass py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-border/50">
+        <div className="py-8 px-4 shadow sm:rounded-xl sm:px-10 border border-border/50">
           <form className="space-y-6" onSubmit={handleUpdate}>
             {error && (
               <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 flex items-start gap-2 text-destructive text-sm">

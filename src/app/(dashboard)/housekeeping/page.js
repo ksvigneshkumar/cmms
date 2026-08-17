@@ -192,7 +192,7 @@ export default function HousekeepingPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Housekeeping</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Housekeeping</h1>
           <p className="text-muted-foreground">Manage and track daily cleaning schedules for halls and rooms.</p>
         </div>
         <button
@@ -218,7 +218,7 @@ export default function HousekeepingPage() {
             const isMopSkipped = mopLog?.notes.includes('Skipped');
             
             return (
-              <div key={loc.id} className="bg-card rounded-xl border border-border p-6 shadow-sm flex flex-col justify-between">
+              <div key={loc.id} className="glass-card rounded-2xl p-6 flex flex-col justify-between">
                 <div>
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-2">

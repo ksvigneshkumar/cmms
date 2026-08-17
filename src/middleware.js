@@ -1,3 +1,10 @@
+/**
+ * Next.js Middleware for Route Protection
+ * 
+ * This file intercepts incoming requests and manages session state via Supabase.
+ * It ensures unauthenticated users are redirected to the login page and securely
+ * updates auth tokens in browser cookies.
+ */
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
@@ -31,8 +38,7 @@ export async function middleware(request) {
     }
   );
 
-  const cmmsSessionCookie = request.cookies.get('cmms_session');
-  const user = cmmsSessionCookie ? { id: cmmsSessionCookie.value } : null;
+  const { data: { user } } = await supabase.auth.getUser();
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth');
   const isProtectedRoute =

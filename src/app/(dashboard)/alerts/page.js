@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
-import { Search, Filter, AlertTriangle, CheckCircle, UserPlus, X } from 'lucide-react';
+import { Search, Filter, ShieldAlert, ShieldCheck, UserPlus, X } from 'lucide-react';
 
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState([]);
@@ -202,12 +202,12 @@ export default function AlertsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Alerts</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Alerts</h1>
           <p className="text-muted-foreground">Monitor and respond to system anomalies.</p>
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+      <div className="glass-card rounded-2xl overflow-hidden flex flex-col">
         <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative max-w-md w-full">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -234,14 +234,14 @@ export default function AlertsPage() {
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 border-b border-border">
+            <thead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-secondary/50 border-b border-border">
               <tr>
-                <th className="px-6 py-4 font-semibold">Asset & Location</th>
-                <th className="px-6 py-4 font-semibold">Issue</th>
-                <th className="px-6 py-4 font-semibold">Priority</th>
-                <th className="px-6 py-4 font-semibold">Status</th>
-                <th className="px-6 py-4 font-semibold">Timestamp</th>
-                <th className="px-6 py-4 text-right font-semibold">Actions</th>
+                <th className="px-6 py-4">Asset & Location</th>
+                <th className="px-6 py-4">Issue</th>
+                <th className="px-6 py-4">Priority</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Timestamp</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -262,7 +262,7 @@ export default function AlertsPage() {
                 </tr>
               ) : (
                 groupedAlerts.map((group) => (
-                  <tr key={group.id} className="hover:bg-accent/50 transition-colors">
+                  <tr key={group.id} className="hover:bg-secondary/30 transition-colors group">
                     <td className="px-6 py-4 align-top">
                       <div className="font-medium text-foreground">{group.assets?.name || 'Unknown Asset'}</div>
                       <div className="text-xs text-muted-foreground">{group.assets?.location || 'Unknown Location'}</div>
@@ -271,7 +271,7 @@ export default function AlertsPage() {
                       <div className="flex flex-col gap-1.5">
                         {group.issues.map((issue, i) => (
                           <div key={i} className="flex items-start gap-2">
-                            {group.priority === 'Critical' && <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />}
+                            {group.priority === 'Critical' && <ShieldAlert className="w-4 h-4 text-destructive shrink-0 mt-0.5" />}
                             <span className="font-medium text-sm">{issue}</span>
                           </div>
                         ))}
@@ -320,7 +320,7 @@ export default function AlertsPage() {
                             onClick={() => resolveAlert(group)}
                             className="px-3 py-1.5 text-xs font-medium bg-green-500 text-white hover:bg-green-600 rounded-md transition-colors flex items-center gap-1 inline-flex"
                           >
-                            <CheckCircle className="w-3 h-3" /> Resolve
+                            <ShieldCheck className="w-3 h-3" /> Resolve
                           </button>
                         )}
                         {group.status === 'Resolved' && (

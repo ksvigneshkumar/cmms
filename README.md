@@ -1,4 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CMMS Web Application
+
+This is a responsive Computerized Maintenance Management System (CMMS) built with [Next.js](https://nextjs.org).
+
+## Project Structure
+
+For developers onboarding to this project, here is a quick overview of the folder structure to help you understand where files are located:
+
+```text
+cmms/
+├── scripts/
+│   └── database/      # Database seeding, migration, and setup scripts (.sql & .js)
+├── src/
+│   ├── app/           # Next.js App Router (Pages & Layouts)
+│   │   ├── (dashboard)/ # Protected dashboard routes and global layout
+│   │   ├── admin/     # Admin-specific routes
+│   │   └── auth/      # Authentication routes (login, update-password)
+│   ├── components/    # Reusable React components
+│   │   └── layout/    # Structural shell components (Sidebar, TopNav, Mobile Context)
+│   └── lib/           # Utilities and Integrations
+│       ├── supabase.js# Supabase client configuration
+│       └── utils.js   # Helper functions (e.g., Tailwind class merging)
+└── public/            # Static assets like images and fonts
+```
+*Note: You can find additional `README.md` files inside `src/app`, `src/components`, and `src/lib` for more specific details.*
+
+---
 
 ## Getting Started
 

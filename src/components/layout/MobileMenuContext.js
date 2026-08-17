@@ -1,5 +1,11 @@
 'use client';
 
+/**
+ * Mobile Menu Context Provider
+ * 
+ * This React Context manages the global state (isOpen) of the responsive mobile Sidebar drawer.
+ * It allows the TopNav hamburger button to trigger the Sidebar visibility across the app.
+ */
 import React, { createContext, useContext, useState } from 'react';
 
 const MobileMenuContext = createContext({

@@ -1,9 +1,16 @@
+/**
+ * @file page.js (Assets)
+ * @description Asset management, health monitoring, and manual sensor data entry.
+ * @author Vignesh K.S
+ * @company CMMS Pro
+ * @created 2026-08
+ */
 'use client';
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { supabase } from '@/lib/supabase';
-import { Plus, Search, Filter, MoreHorizontal, Activity, Zap, Trash2, MapPin, Settings, Eye, MoreVertical, ChevronsUpDown, Box } from 'lucide-react';
+import { Plus, Search, Filter, MoreHorizontal, Activity, Power, Trash2, MapPin, Settings2, Eye, MoreVertical, ChevronsUpDown, Cuboid, CheckCircle2, AlertCircle, AlertTriangle, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AssetsPage() {
@@ -11,6 +18,14 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [toast, setToast] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
+  };
 
   const CATEGORIES = [
     'Production Equipment',
@@ -45,6 +60,8 @@ export default function AssetsPage() {
     fetchAssets();
   }, []);
 
+  // TODO (vignesh): Move all these Supabase fetches into custom React Query hooks next sprint. 
+  // This component is getting way too bloated and re-renders are getting expensive.
   const fetchAssets = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -199,7 +216,7 @@ export default function AssetsPage() {
         }).eq('id', simulatingAsset.id);
 
         const msgs = newAlerts.map(a => a.issue).join('\\n');
-        alert(`Warnings Generated:\\n${msgs}`);
+        showToast(`Warnings Generated:\\n${msgs}`, 'error');
       } else {
         // Auto-resolve any open alerts for this asset since values are now normal
         const { data: activeAlerts } = await supabase
@@ -211,27 +228,25 @@ export default function AssetsPage() {
         if (activeAlerts && activeAlerts.length > 0) {
           const alertIds = activeAlerts.map(a => a.id);
 
-          // 1. Mark Alerts as Resolved
+          // Auto-resolve related faults since sensor readings returned to normal thresholds
           await supabase.from('alerts').update({
             status: 'Resolved',
             resolved_at: new Date().toISOString()
           }).in('id', alertIds);
 
-          // 2. Mark corresponding Work Orders as Completed
           await supabase.from('work_orders').update({
             status: 'Completed',
             completed_at: new Date().toISOString()
           }).in('alert_id', alertIds).eq('status', 'Open');
 
-          // 3. Restore Health Score
           await supabase.from('assets').update({
             health_score: 100,
             status: 'Running'
           }).eq('id', simulatingAsset.id);
 
-          alert('Data is normal. Active alerts and work orders have been automatically resolved!');
+          showToast('Data is normal. Active alerts and work orders have been automatically resolved!', 'success');
         } else {
-          alert('Data recorded successfully. Values are normal.');
+          showToast('Data recorded successfully. Values are normal.', 'success');
         }
       }
 
@@ -239,7 +254,7 @@ export default function AssetsPage() {
       fetchAssets(); // Refresh to show new health score
     } catch (err) {
       console.error(err);
-      alert('Error simulating data');
+      showToast('Error simulating data', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -272,12 +287,12 @@ export default function AssetsPage() {
 
         if (scheduleError) {
           console.error("Error adding schedule:", scheduleError);
-          alert(`Added ${newAsset.name} but failed to save schedule.`);
+          showToast(`Added ${newAsset.name} but failed to save schedule.`, 'warning');
         } else {
-          alert(`Successfully added ${newAsset.name} along with its ${newAsset.scheduleType} schedule!`);
+          showToast(`Successfully added ${newAsset.name} along with its ${newAsset.scheduleType} schedule!`, 'success');
         }
       } else {
-        alert(`Successfully added ${newAsset.name}`);
+        showToast(`Successfully added ${newAsset.name}`, 'success');
       }
 
       setIsAddingAsset(false);
@@ -288,7 +303,7 @@ export default function AssetsPage() {
       fetchAssets();
     } catch (err) {
       console.error(err);
-      alert('Error adding asset');
+      showToast('Error adding asset', 'error');
     } finally {
       setAdding(false);
     }
@@ -328,10 +343,10 @@ export default function AssetsPage() {
 
       // Update local state to remove the deleted asset
       setAssets(assets.filter(asset => asset.id !== id));
-      alert(`${name} has been deleted successfully.`);
+      showToast(`${name} has been deleted successfully.`, 'success');
+      fetchAssets();
     } catch (err) {
-      console.error(err);
-      alert('Error deleting asset');
+      showToast('Error deleting asset', 'error');
     }
   };
 
@@ -351,7 +366,7 @@ export default function AssetsPage() {
         </button>
       </div>
 
-      <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden flex flex-col">
+      <div className="glass-card rounded-2xl overflow-hidden flex flex-col">
         <div className="p-4 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative w-full sm:max-w-md flex flex-col sm:flex-row gap-2">
             <div className="relative w-full">
@@ -361,7 +376,10 @@ export default function AssetsPage() {
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="block w-full pl-10 pr-3 py-2 border border-input rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm transition-colors"
                 placeholder="Search assets by name or type..."
               />
@@ -369,7 +387,10 @@ export default function AssetsPage() {
 
             <select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setCurrentPage(1);
+              }}
               className="block w-full sm:w-48 pl-3 pr-8 py-2 border border-input rounded-md leading-5 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm transition-colors"
             >
               <option value="All">All Categories</option>
@@ -386,52 +407,40 @@ export default function AssetsPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground bg-white border-b border-border">
+            <thead className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider bg-secondary/50 border-b border-border">
               <tr>
-                <th className="px-6 py-4 font-semibold text-gray-500">Asset Name</th>
-                <th className="px-6 py-4 font-semibold text-gray-500">
-                  <div className="flex items-center gap-1">Category <ChevronsUpDown className="w-3 h-3 opacity-50" /></div>
-                </th>
-                <th className="px-6 py-4 font-semibold text-gray-500">
-                  <div className="flex items-center gap-1">Area <ChevronsUpDown className="w-3 h-3 opacity-50" /></div>
-                </th>
-                <th className="px-6 py-4 font-semibold text-gray-500">
-                  <div className="flex items-center gap-1">System <ChevronsUpDown className="w-3 h-3 opacity-50" /></div>
-                </th>
-                <th className="px-6 py-4 font-semibold text-gray-500">
-                  <div className="flex items-center gap-1">Status <ChevronsUpDown className="w-3 h-3 opacity-50" /></div>
-                </th>
-                <th className="px-6 py-4 font-semibold text-gray-500">
-                  <div className="flex items-center gap-1">Health <ChevronsUpDown className="w-3 h-3 opacity-50" /></div>
-                </th>
-                <th className="px-6 py-4 font-semibold text-gray-500">Actions</th>
+                <th className="px-6 py-4">Asset Info</th>
+                <th className="px-6 py-4">Location</th>
+                <th className="px-6 py-4">System</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Health</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-white">
+            <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-12 text-center text-muted-foreground">
-                    <div className="flex justify-center mb-2">
-                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    </div>
+                  <td colSpan="6" className="px-6 py-8 text-center text-muted-foreground">
                     Loading assets...
                   </td>
                 </tr>
               ) : filteredAssets.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-12 text-center text-muted-foreground">
-                    No assets found. {search && 'Try adjusting your search query.'}
+                  <td colSpan="6" className="px-6 py-8 text-center text-muted-foreground">
+                    No assets found.
                   </td>
                 </tr>
               ) : (
-                filteredAssets.map((asset) => {
-                  const health = getHealthStatus(asset.health_score);
-                  return (
-                    <tr key={asset.id} className="hover:bg-slate-50 transition-colors group">
+                (() => {
+                  const paginatedAssets = filteredAssets.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+                  return paginatedAssets.map((asset) => {
+                    const health = getHealthStatus(asset.health_score);
+                    return (
+                      <tr key={asset.id} className="hover:bg-secondary/30 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
-                            <Box className="w-6 h-6 text-slate-500" />
+                            <Cuboid className="w-6 h-6 text-slate-500" />
                           </div>
                           <div>
                             <div className="font-semibold text-blue-600">{asset.name}</div>
@@ -455,7 +464,7 @@ export default function AssetsPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-start gap-2">
-                          <Settings className="w-4 h-4 text-slate-400 mt-0.5" />
+                          <Settings2 className="w-4 h-4 text-slate-400 mt-0.5" />
                           <div>
                             <div className="font-medium text-slate-700">{asset.type || 'System'}</div>
                             <div className="text-xs text-slate-400 mt-1 uppercase tracking-wider">SYS-{asset.id.substring(4, 8)}</div>
@@ -484,7 +493,7 @@ export default function AssetsPage() {
                             className="flex items-center gap-1.5 text-sm font-semibold text-amber-500 hover:text-amber-700 transition-colors"
                             title="Manual Data Entry"
                           >
-                            <Zap className="w-4 h-4" /> Data
+                            <Power className="w-4 h-4" /> Data
                           </button>
                           <Link
                             href={`/assets/${asset.id}`}
@@ -501,24 +510,46 @@ export default function AssetsPage() {
                           </button>
                         </div>
                       </td>
-                    </tr>
-                  );
-                })
+                      </tr>
+                    );
+                  });
+                })()
               )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination Dummy */}
-        <div className="p-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground bg-white">
-          <div>Showing 1 to {filteredAssets.length} of {filteredAssets.length} assets</div>
+        {/* Pagination */}
+        <div className="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground bg-white">
+          <div>
+            Showing {filteredAssets.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredAssets.length)} of {filteredAssets.length} assets
+          </div>
           <div className="flex items-center gap-1">
-            <button className="w-8 h-8 flex items-center justify-center border border-border rounded-md hover:bg-slate-50 disabled:opacity-50 text-slate-400">&lt;</button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-md bg-blue-600 text-white font-medium">1</button>
-            <button className="w-8 h-8 flex items-center justify-center border border-transparent rounded-md hover:bg-slate-50 text-slate-600 font-medium">2</button>
-            <button className="w-8 h-8 flex items-center justify-center border border-transparent rounded-md hover:bg-slate-50 text-slate-600 font-medium">3</button>
-            <button className="w-8 h-8 flex items-center justify-center border border-transparent rounded-md hover:bg-slate-50 text-slate-600 font-medium">4</button>
-            <button className="w-8 h-8 flex items-center justify-center border border-border rounded-md hover:bg-slate-50 disabled:opacity-50 text-slate-400">&gt;</button>
+            <button 
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="w-8 h-8 flex items-center justify-center border border-border rounded-md hover:bg-slate-50 disabled:opacity-50 text-slate-400"
+            >&lt;</button>
+            
+            {Array.from({ length: Math.ceil(filteredAssets.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`w-8 h-8 flex items-center justify-center rounded-md font-medium transition-colors ${
+                  currentPage === page 
+                    ? 'bg-blue-600 text-white' 
+                    : 'border border-transparent hover:bg-slate-50 text-slate-600'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button 
+              onClick={() => setCurrentPage(Math.min(Math.ceil(filteredAssets.length / itemsPerPage), currentPage + 1))}
+              disabled={currentPage === Math.ceil(filteredAssets.length / itemsPerPage) || Math.ceil(filteredAssets.length / itemsPerPage) === 0}
+              className="w-8 h-8 flex items-center justify-center border border-border rounded-md hover:bg-slate-50 disabled:opacity-50 text-slate-400"
+            >&gt;</button>
           </div>
         </div>
       </div>
@@ -528,7 +559,7 @@ export default function AssetsPage() {
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-card w-full max-w-md rounded-xl border border-border shadow-lg p-6">
             <h3 className="text-lg font-semibold mb-2 text-foreground flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-500" />
+              <Power className="w-5 h-5 text-amber-500" />
               Manual Sensor Entry
             </h3>
             <p className="text-sm text-muted-foreground mb-4">
@@ -988,6 +1019,26 @@ export default function AssetsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-20 right-4 z-50 animate-in fade-in slide-in-from-top-4">
+          <div className={`p-4 rounded-xl shadow-lg border flex items-start gap-3 max-w-sm ${
+            toast.type === 'error' ? 'bg-destructive/10 border-destructive/20 text-destructive' :
+            toast.type === 'warning' ? 'bg-orange-500/10 border-orange-500/20 text-orange-600' :
+            'bg-green-500/10 border-green-500/20 text-green-600'
+          }`}>
+            {toast.type === 'error' ? <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" /> : 
+             toast.type === 'warning' ? <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" /> :
+             <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" />}
+             <div className="flex-1">
+                {toast.message.split('\\n').map((line, i) => <div key={i} className="text-sm font-medium">{line}</div>)}
+             </div>
+             <button onClick={() => setToast(null)} className="opacity-70 hover:opacity-100 shrink-0">
+               <X className="w-4 h-4" />
+             </button>
           </div>
         </div>
       )}
